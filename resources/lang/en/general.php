@@ -2,7 +2,7 @@
 
 return [
     
-    'pageTitle' => 'eSports Ipsum',
-    'contentTitle' => 'eSports Ipsum',
+    'pageTitle' => 'Esports Ipsum',
+    'contentTitle' => 'Esports Ipsum',
     
 ];
