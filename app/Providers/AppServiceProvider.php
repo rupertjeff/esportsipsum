@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use App\Http\Composers\Main;
+use App\Http\Composers\Suggestion;
 use App\Services\Words;
 use App\Contracts\Generator;
+use Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -31,6 +33,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        if ( ! $this->app->environment('production')) {
+            $this->app->register(IdeHelperServiceProvider::class);
+        }
         $this->app->bind(Generator::class, function () {
             return new Words(
                 config('general.minParagraphSentenceCount', 3), config('general.maxParagraphSentenceCount', 6),
@@ -38,5 +43,6 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->bind('words', Generator::class);
         view()->composer('main', Main::class);
+        view()->composer('suggestion-form', Suggestion::class);
     }
 }

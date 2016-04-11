@@ -11,6 +11,8 @@
 |
 */
 
-Route::get('/', function () {
+Route::post('suggestions', ['uses' => 'SuggestionController@store', 'as' => 'suggestions.store']);
+
+Route::get('/', ['as' => 'home', function () {
     return view('main');
-});
+}]);

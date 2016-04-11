@@ -17,6 +17,7 @@
     <div class="content">
         {!! $content !!}
     </div>
+    @include('suggestion-form')
 </body>
 
 </html>
