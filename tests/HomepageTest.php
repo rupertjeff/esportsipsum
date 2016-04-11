@@ -26,8 +26,8 @@ class HomepageTest extends TestCase
      */
     public function it_shows_words()
     {
-        $this->visit('/')
-            ->see('eSports Ipsum');
+        $this->visit(route('home'))
+            ->see('Esports Ipsum');
     }
 
     /**
@@ -35,9 +35,10 @@ class HomepageTest extends TestCase
      */
     public function it_allows_for_suggesting_new_words_to_add()
     {
-        $this->visit('/')
+        $this->visit(route('home'))
             ->type('new phrase', 'word')
             ->press('submit')
+            ->seePageIs(route('home'))
             ->seeInDatabase('suggested_words', [
                 'word' => 'new phrase',
             ]);
@@ -48,16 +49,18 @@ class HomepageTest extends TestCase
      */
     public function it_increments_word_count_when_a_suggestion_is_duplicated()
     {
-        $this->visit('/')
+        $this->visit(route('home'))
             ->type('new phrase', 'word')
             ->press('submit')
+            ->seePageIs(route('home'))
             ->seeInDatabase('suggested_words', [
                 'word'  => 'new phrase',
                 'count' => 1,
             ])
-            ->visit('/')
+            ->visit(route('home'))
             ->type('new phrase', 'word')
             ->press('submit')
+            ->seePageIs(route('home'))
             ->seeInDatabase('suggested_words', [
                 'word'  => 'new phrase',
                 'count' => 2,
@@ -65,6 +68,20 @@ class HomepageTest extends TestCase
             ->dontSeeInDatabase('suggested_words', [
                 'word'  => 'new phrase',
                 'count' => 1,
+            ]);
+    }
+    
+    /**
+     * @test
+     */
+    public function it_silently_ignores_banned_words()
+    {
+        $this->visit(route('home'))
+            ->type('ass', 'word')
+            ->press('submit')
+            ->seePageIs(route('home'))
+            ->dontSeeInDatabase('suggested_words', [
+                'word' => 'ass',
             ]);
     }
 

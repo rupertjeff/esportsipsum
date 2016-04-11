@@ -9,6 +9,7 @@
  */
 namespace App\Http\Controllers;
 
+use App\Database\Models\BannedWord;
 use App\Database\Models\SuggestedWord;
 use App\Database\Models\Word;
 use App\Http\Requests\Suggestion\Create as CreateRequest;
@@ -28,6 +29,10 @@ class SuggestionController extends Controller
     public function store(CreateRequest $request)
     {
         $attributes = $request->only(['word']);
+        if ($this->includesBannedWords($attributes)) {
+            return $this->respond($request);
+        }
+
         if (0 < Word::where($attributes)->count()) {
             $word = Word::where($attributes)->first();
             $word->count++;
@@ -39,13 +44,33 @@ class SuggestionController extends Controller
         } else {
             SuggestedWord::create($attributes);
         }
-        
+
+        return $this->respond($request);
+    }
+
+    /**
+     * @param CreateRequest $request
+     *
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     */
+    protected function respond(CreateRequest $request)
+    {
         if ($request->wantsJson()) {
             return response()
                 ->json();
         }
-        
+
         return redirect()
             ->route('home');
+    }
+
+    /**
+     * @param array $attributes
+     *
+     * @return bool
+     */
+    protected function includesBannedWords($attributes): bool
+    {
+        return 0 < BannedWord::where('word', 'LIKE', '%' . $attributes['word'] . '%')->count();
     }
 }

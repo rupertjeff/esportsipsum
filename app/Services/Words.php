@@ -109,6 +109,8 @@ class Words implements Generator
         while (0 < $count--) {
             $words[] = $wordlist[random_int(0, $maxSize - 1)];
         }
+        // TODO: update to capitalize first word in sentence
+        // TODO?: add commas randomly
 
         return $join ? implode(' ', $words) . '.' : $words;
     }
