@@ -10,6 +10,7 @@
 namespace App\Services;
 
 use App\Contracts\Generator;
+use App\Database\Models\Word;
 
 /**
  * Class Words
@@ -46,15 +47,13 @@ class Words implements Generator
     /**
      * Words constructor.
      *
-     * @param array $words
      * @param int   $minSentenceCount
      * @param int   $maxSentenceCount
      * @param int   $minWordCount
      * @param int   $maxWordCount
      */
-    public function __construct(array $words = [], $minSentenceCount = 3, $maxSentenceCount = 6, $minWordCount = 5, $maxWordCount = 16)
+    public function __construct($minSentenceCount = 3, $maxSentenceCount = 6, $minWordCount = 5, $maxWordCount = 16)
     {
-        $this->words            = array_unique($words);
         $this->minSentenceCount = $minSentenceCount;
         $this->maxSentenceCount = $maxSentenceCount;
         $this->minWordCount     = $minWordCount;
@@ -105,11 +104,24 @@ class Words implements Generator
     {
         $words = [];
 
-        $maxSize = count($this->words);
+        $wordlist = $this->getWordList();
+        $maxSize  = count($wordlist);
         while (0 < $count--) {
-            $words[] = $this->words[random_int(0, $maxSize - 1)];
+            $words[] = $wordlist[random_int(0, $maxSize - 1)];
         }
 
         return $join ? implode(' ', $words) . '.' : $words;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getWordList(): array
+    {
+        if (null !== $this->words && 0 < count($this->words)) {
+            return $this->words;
+        }
+        
+        return $this->words = Word::all()->pluck('word')->toArray();
     }
 }

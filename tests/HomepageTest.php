@@ -9,6 +9,9 @@
  */
 namespace Tests;
 
+use App\Database\Models\BannedWord;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+
 /**
  * Class HomepageTest
  *
@@ -16,6 +19,8 @@ namespace Tests;
  */
 class HomepageTest extends TestCase
 {
+    use DatabaseMigrations;
+
     /**
      * @test
      */
